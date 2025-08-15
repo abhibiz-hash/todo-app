@@ -1,7 +1,16 @@
 // @ts-nocheck
 const express = require('express');
+const cors = require('cors');
 const app = express();
-const PORT = process.env.PORT || 3001;
+
+
+
+app.use(cors({
+    origin: "http://localhost:3000", // your frontend URL
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+}));
+
 
 app.use(express.json());
 
@@ -58,23 +67,27 @@ app.put("/todos/:id", (req, res) => {
 });
 
 app.delete("/todos/:id", (req, res) => {
-  const id = parseInt(req.params.id);
-  const index = todos.findIndex(todo => todo.id === id);
+    const id = parseInt(req.params.id);
+    const index = todos.findIndex(todo => todo.id === id);
 
-  if (index === -1) {
-    return res.status(404).json({ message: "Todo not found" });
-  }
+    if (index === -1) {
+        return res.status(404).json({ message: "Todo not found" });
+    }
 
-  const deletedTodo = todos.splice(index, 1); // remove todo
-  res.json({ message: "Todo deleted successfully", todo: deletedTodo[0] });
+    const deletedTodo = todos.splice(index, 1); // remove todo
+    res.json({ message: "Todo deleted successfully", todo: deletedTodo[0] });
 });
 
-
+app.delete("/todos", (req, res) => {
+    todos = [];
+    res.json({ message: "All todos deleted successfully" });
+});
 
 app.get('/', (req, res) => {
     res.send('Hello, this is the backend of our To-Do app!');
 });
 
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
